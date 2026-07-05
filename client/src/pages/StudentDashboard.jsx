@@ -16,7 +16,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 
 export default function StudentDashboard() {
-  const { user: authUser, logout, institution } = useAuth();
+  const { user, logout, institution } = useAuth();
+  const authUser = user;
   const navigate = useNavigate();
 
   // Load profile from local storage or fallback to authUser
