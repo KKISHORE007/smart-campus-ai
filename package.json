@@ -1,0 +1,18 @@
+{
+  "name": "student-helpdesk-agent-mern",
+  "version": "1.0.0",
+  "description": "Student Helpdesk Agent — MERN Stack RAG AI Companion (Serial No. 12)",
+  "private": true,
+  "scripts": {
+    "install:all": "npm --prefix server install && npm --prefix client install",
+    "seed": "npm --prefix server run seed",
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "dev": "npx concurrently \"npm:dev:server\" \"npm:dev:client\" --names \"SERVER,CLIENT\" --prefix-colors \"blue,magenta\"",
+    "build": "npm --prefix client run build",
+    "start": "npm --prefix server start"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}
