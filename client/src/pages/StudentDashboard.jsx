@@ -150,11 +150,26 @@ export default function StudentDashboard() {
   useEffect(() => {
     try {
       const allScores = JSON.parse(localStorage.getItem('helpdesk_student_scores') || '{}');
-      const myId = (user?.registerNo || user?.loginId || 'REG-2026-0001').trim().toUpperCase();
-      // Look for match by ID or student name
-      const found = allScores[myId] || Object.values(allScores).find(s => Object.values(s).some(sub => sub.studentName?.toLowerCase() === user?.name?.toLowerCase())) || {};
-      setLiveScores(found);
-    } catch (e) {}
+      const myId = String(user?.registerNo || user?.loginId || 'REG-2026-0001').trim().toUpperCase();
+      let found = null;
+      if (allScores && typeof allScores === 'object') {
+        found = allScores[myId];
+        if (!found) {
+          Object.values(allScores).forEach(s => {
+            if (s && typeof s === 'object') {
+              Object.values(s).forEach(sub => {
+                if (sub && sub.studentName && String(sub.studentName).toLowerCase() === String(user?.name || '').toLowerCase()) {
+                  found = s;
+                }
+              });
+            }
+          });
+        }
+      }
+      setLiveScores(found || {});
+    } catch (e) {
+      setLiveScores({});
+    }
   }, [user]);
 
   const rawSemesterData = {
@@ -207,22 +222,27 @@ export default function StudentDashboard() {
 
   const SEMESTER_DATA = {};
   Object.keys(rawSemesterData).forEach(sem => {
-    const semKey = `Semester ${sem}`;
-    const liveSemObj = liveScores[semKey] || liveScores[sem] || {};
-    SEMESTER_DATA[sem] = rawSemesterData[sem].map(subj => {
-      if (liveSemObj[subj.name]) {
-        const live = liveSemObj[subj.name];
-        return {
-          ...subj,
-          test1: live.test1,
-          test2: live.test2,
-          test3: live.test3,
-          result: `${live.grade} (${live.semesterResult}/100)`,
-          gpa: (live.semesterResult / 10).toFixed(1)
-        };
-      }
-      return subj;
-    });
+    try {
+      const semKey = `Semester ${sem}`;
+      const liveSemObj = (liveScores && typeof liveScores === 'object') ? (liveScores[semKey] || liveScores[sem] || {}) : {};
+      SEMESTER_DATA[sem] = rawSemesterData[sem].map(subj => {
+        if (liveSemObj && typeof liveSemObj === 'object' && liveSemObj[subj.name] && typeof liveSemObj[subj.name] === 'object') {
+          const live = liveSemObj[subj.name];
+          const resNum = typeof live.semesterResult === 'number' ? live.semesterResult : 85;
+          return {
+            ...subj,
+            test1: live.test1 !== undefined ? live.test1 : subj.test1,
+            test2: live.test2 !== undefined ? live.test2 : subj.test2,
+            test3: live.test3 !== undefined ? live.test3 : subj.test3,
+            result: `${live.grade || 'A'} (${resNum}/100)`,
+            gpa: (resNum / 10).toFixed(1)
+          };
+        }
+        return subj;
+      });
+    } catch (err) {
+      SEMESTER_DATA[sem] = rawSemesterData[sem];
+    }
   });
 
   // Mock Fee Data for 8 Semesters
