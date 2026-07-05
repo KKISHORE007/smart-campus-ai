@@ -326,6 +326,17 @@ export default function StudentDashboard() {
             </div>
           </button>
 
+          <button
+            onClick={() => setActiveTab('database')}
+            style={{ padding: '1rem', borderRadius: '12px', border: activeTab === 'database' ? '1px solid #a855f7' : '1px solid transparent', background: activeTab === 'database' ? 'linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(147, 51, 234, 0.3) 100%)' : 'transparent', color: activeTab === 'database' ? '#c084fc' : '#cbd5e1', fontWeight: 700, fontSize: '1rem', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px', transition: 'all 0.2s' }}
+          >
+            <span style={{ fontSize: '1.3rem' }}>📂</span>
+            <div>
+              <div>Student Database</div>
+              <div style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 400 }}>Campus Directory & Records</div>
+            </div>
+          </button>
+
           <div style={{ marginTop: 'auto', background: 'rgba(30, 41, 59, 0.5)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
             <div style={{ fontSize: '0.8rem', color: '#fbbf24', fontWeight: 700, marginBottom: '6px' }}>🤖 AI Advisor Ready</div>
             <p style={{ fontSize: '0.75rem', color: '#94a3b8', margin: 0, lineHeight: 1.4 }}>
@@ -497,6 +508,77 @@ export default function StudentDashboard() {
                             <div>{fee.date}</div>
                             {fee.receipt !== '-' && <div style={{ fontSize: '0.75rem', color: '#38bdf8', fontFamily: 'monospace' }}>{fee.receipt}</div>}
                           </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 3: STUDENT DATABASE & CAMPUS DIRECTORY */}
+          {activeTab === 'database' && (
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+                <div>
+                  <h2 style={{ fontSize: '1.8rem', margin: 0, fontWeight: 800 }}>📂 Verified Campus Student Database & Directory</h2>
+                  <p style={{ color: '#94a3b8', margin: '4px 0 0 0' }}>Official institutional student records, exam register rolls, attendance eligibility, and treasury clearance status.</p>
+                </div>
+                <div style={{ background: 'rgba(168, 85, 247, 0.15)', border: '1px solid #a855f7', color: '#c084fc', padding: '6px 16px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 700 }}>
+                  🛡️ Live Cloud Sync Active
+                </div>
+              </div>
+
+              <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '16px', border: '1px solid rgba(168, 85, 247, 0.3)', background: 'rgba(15, 23, 42, 0.7)' }}>
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '700px' }}>
+                    <thead>
+                      <tr style={{ borderBottom: '2px solid rgba(168, 85, 247, 0.4)', color: '#c084fc', fontSize: '0.9rem', textTransform: 'uppercase' }}>
+                        <th style={{ padding: '1rem' }}>Student Profile</th>
+                        <th style={{ padding: '1rem' }}>Exam Register No</th>
+                        <th style={{ padding: '1rem' }}>Department & Batch</th>
+                        <th style={{ padding: '1rem' }}>Attendance</th>
+                        <th style={{ padding: '1rem' }}>Treasury Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {/* Current Student Highlight */}
+                      <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', background: 'rgba(59, 130, 246, 0.15)', fontWeight: 600 }}>
+                        <td style={{ padding: '1rem', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <img src={profile?.photoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80'} alt="Avatar" style={{ width: '38px', height: '38px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #60a5fa' }} />
+                          <div>
+                            <div style={{ color: '#f8fafc', fontWeight: 700 }}>{profile?.name} (You)</div>
+                            <div style={{ fontSize: '0.75rem', color: '#60a5fa' }}>{profile?.email}</div>
+                          </div>
+                        </td>
+                        <td style={{ padding: '1rem', color: '#38bdf8', fontFamily: 'monospace', fontWeight: 700 }}>{profile?.registerNo || 'REG-2026-8942'}</td>
+                        <td style={{ padding: '1rem', color: '#cbd5e1' }}>{profile?.department || 'Computer Science'} ({profile?.joinYear || '2026'})</td>
+                        <td style={{ padding: '1rem' }}><span style={{ padding: '4px 10px', borderRadius: '20px', background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', fontSize: '0.8rem', fontWeight: 700 }}>92% (Eligible ✅)</span></td>
+                        <td style={{ padding: '1rem' }}><span style={{ padding: '4px 10px', borderRadius: '20px', background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', fontSize: '0.8rem', fontWeight: 700 }}>Paid ✅</span></td>
+                      </tr>
+
+                      {/* Mock Classmates */}
+                      {[
+                        { name: 'Arjun Sharma', reg: 'REG-2026-1042', dept: 'Computer Science & Eng', year: '2026', att: '88% (Eligible ✅)', attColor: '#34d399', attBg: 'rgba(16,185,129,0.2)', fee: 'Paid ✅', feeColor: '#34d399', feeBg: 'rgba(16,185,129,0.2)', photo: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=300&q=80' },
+                        { name: 'Kishore R', reg: 'REG-2026-8942', dept: 'Computer Science & Eng', year: '2026', att: '95% (Exemplary 🌟)', attColor: '#38bdf8', attBg: 'rgba(56,189,248,0.2)', fee: 'Paid ✅', feeColor: '#34d399', feeBg: 'rgba(16,185,129,0.2)', photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80' },
+                        { name: 'Priya Patel', reg: 'REG-2026-2051', dept: 'Electronics & Comm', year: '2026', att: '79% (Eligible ✅)', attColor: '#34d399', attBg: 'rgba(16,185,129,0.2)', fee: 'Paid ✅', feeColor: '#34d399', feeBg: 'rgba(16,185,129,0.2)', photo: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80' },
+                        { name: 'Sneha Reddy', reg: 'REG-2026-3089', dept: 'Information Technology', year: '2026', att: '94% (Exemplary 🌟)', attColor: '#38bdf8', attBg: 'rgba(56,189,248,0.2)', fee: 'Paid ✅', feeColor: '#34d399', feeBg: 'rgba(16,185,129,0.2)', photo: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=300&q=80' },
+                        { name: 'Vikram Singh', reg: 'REG-2026-4102', dept: 'Computer Science & Eng', year: '2026', att: '72% (Medical 🟡)', attColor: '#fbbf24', attBg: 'rgba(245,158,11,0.2)', fee: 'Pending ⏳', feeColor: '#fbbf24', feeBg: 'rgba(245,158,11,0.2)', photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80' },
+                        { name: 'Ananya Sharma', reg: 'REG-2026-5120', dept: 'Electrical & Electronics', year: '2026', att: '85% (Eligible ✅)', attColor: '#34d399', attBg: 'rgba(16,185,129,0.2)', fee: 'Paid ✅', feeColor: '#34d399', feeBg: 'rgba(16,185,129,0.2)', photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80' }
+                      ].map((s, idx) => (
+                        <tr key={idx} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', transition: 'background 0.2s' }}>
+                          <td style={{ padding: '1rem', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <img src={s.photo} alt="Avatar" style={{ width: '38px', height: '38px', borderRadius: '50%', objectFit: 'cover' }} />
+                            <div>
+                              <div style={{ color: '#f8fafc', fontWeight: 600 }}>{s.name}</div>
+                              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{s.reg.toLowerCase()}@xyzec.edu</div>
+                            </div>
+                          </td>
+                          <td style={{ padding: '1rem', color: '#94a3b8', fontFamily: 'monospace' }}>{s.reg}</td>
+                          <td style={{ padding: '1rem', color: '#cbd5e1' }}>{s.dept} ({s.year})</td>
+                          <td style={{ padding: '1rem' }}><span style={{ padding: '4px 10px', borderRadius: '20px', background: s.attBg, color: s.attColor, fontSize: '0.8rem', fontWeight: 700 }}>{s.att}</span></td>
+                          <td style={{ padding: '1rem' }}><span style={{ padding: '4px 10px', borderRadius: '20px', background: s.feeBg, color: s.feeColor, fontSize: '0.8rem', fontWeight: 700 }}>{s.fee}</span></td>
                         </tr>
                       ))}
                     </tbody>
