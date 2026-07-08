@@ -21,6 +21,7 @@ import Login from './pages/Login.jsx';
 import EmptyDashboard from './pages/EmptyDashboard.jsx';
 import SuperAdminDashboard from './pages/SuperAdminDashboard.jsx';
 import Chat from './pages/Chat.jsx';
+import About from './pages/About.jsx';
 import StudentOnboard from './pages/StudentOnboard.jsx';
 import StaffOnboard from './pages/StaffOnboard.jsx';
 import HodOnboard from './pages/HodOnboard.jsx';
