@@ -44,23 +44,6 @@ export default function Login() {
     }
   }, [isAuthenticated, isSuperAdmin, navigate]);
 
-  // Pre-populate demo inputs based on role param
-  useEffect(() => {
-    if (roleParam === 'super_admin') {
-      setLoginId('stark@123');
-      setPassword('12345678');
-    } else if (roleParam === 'hod') {
-      setLoginId('hod.cse');
-      setPassword('hod12345');
-    } else if (roleParam === 'staff') {
-      setLoginId('staff.lib');
-      setPassword('staff12345');
-    } else if (roleParam === 'student') {
-      setLoginId('student@xyzec.edu');
-      setPassword('student123');
-    }
-  }, [roleParam]);
-
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!loginId.trim() || !password.trim()) {

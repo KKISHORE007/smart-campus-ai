@@ -105,24 +105,23 @@ export default function RoleSelect() {
 
       <div className="role-select-footer">
         <p>🔒 System verifies registered membership before authorizing access.</p>
-        <div style={{ marginTop: '1rem', display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+        <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'center' }}>
           <button
-            onClick={() => navigate('/login?role=student')}
-            style={{ color: '#38bdf8', textDecoration: 'none', fontWeight: 600, background: 'rgba(56, 189, 248, 0.1)', padding: '0.6rem 1.2rem', borderRadius: '20px', border: '1px solid #38bdf8', cursor: 'pointer' }}
+            onClick={() => navigate('/login')}
+            style={{
+              color: '#38bdf8',
+              fontWeight: 700,
+              fontSize: '0.95rem',
+              background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.15) 0%, rgba(59, 130, 246, 0.25) 100%)',
+              padding: '0.8rem 2rem',
+              borderRadius: '25px',
+              border: '1px solid #38bdf8',
+              cursor: 'pointer',
+              boxShadow: '0 4px 15px rgba(56, 189, 248, 0.25)',
+              transition: 'all 0.3s ease'
+            }}
           >
-            🔑 Existing Student Login ➔
-          </button>
-          <button
-            onClick={() => navigate('/login?role=staff')}
-            style={{ color: '#a78bfa', textDecoration: 'none', fontWeight: 600, background: 'rgba(139, 92, 246, 0.15)', padding: '0.6rem 1.2rem', borderRadius: '20px', border: '1px solid #a78bfa', cursor: 'pointer' }}
-          >
-            👨‍🏫 Existing Professor Login ➔
-          </button>
-          <button
-            onClick={() => navigate('/login?role=hod')}
-            style={{ color: '#f472b6', textDecoration: 'none', fontWeight: 600, background: 'rgba(236, 72, 153, 0.15)', padding: '0.6rem 1.2rem', borderRadius: '20px', border: '1px solid #f472b6', cursor: 'pointer' }}
-          >
-            🏛️ Existing HOD Login ➔
+            🔑 Log in Existing ID ➔
           </button>
         </div>
       </div>
