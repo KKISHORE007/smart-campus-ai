@@ -89,8 +89,11 @@ export default function Login() {
         navigate('/super-admin', { replace: true });
       } else if (user.role === 'student' || roleParam === 'student') {
         navigate('/student-dashboard', { replace: true });
+      } else if (user.role === 'staff' || roleParam === 'staff') {
+        navigate('/staff-dashboard', { replace: true });
+      } else if (user.role === 'hod' || roleParam === 'hod') {
+        navigate('/hod-dashboard', { replace: true });
       } else {
-        // Staff, HOD go to their placeholder / dashboard
         navigate('/dashboard', { replace: true });
       }
     } catch (err) {
@@ -105,6 +108,65 @@ export default function Login() {
           loginId: 'stark@123'
         }));
         navigate('/super-admin', { replace: true });
+      } else if (roleParam === 'staff') {
+        // Check local storage accounts or demo accounts
+        const profAccounts = JSON.parse(localStorage.getItem('helpdesk_professor_accounts') || '{}');
+        const lookupKey = loginId.trim().toLowerCase();
+        const foundProf = profAccounts[lookupKey];
+
+        if (foundProf && foundProf.password === password) {
+          if (foundProf.status === 'pending_approval') {
+            setError('⏳ Account Approval Pending: Your details have been submitted to Super Admin. Once approved in the Admin Portal, your Professor Portal will open automatically.');
+          } else {
+            localStorage.setItem('helpdesk_token', 'demo-staff-jwt-token-2026');
+            localStorage.setItem('helpdesk_user', JSON.stringify(foundProf));
+            navigate('/staff-dashboard', { replace: true });
+          }
+        } else if ((loginId === 'staff.lib' || loginId === 'prof_cse') && password === 'staff12345') {
+          localStorage.setItem('helpdesk_token', 'demo-staff-jwt-token-2026');
+          localStorage.setItem('helpdesk_user', JSON.stringify({
+            name: 'Dr. Ramesh Kumar',
+            role: 'staff',
+            staffType: 'class_advisor',
+            section: 'A',
+            advisorYear: '2nd Year',
+            email: 'ramesh.cse@xyzec.edu',
+            department: 'Computer Science & Engineering',
+            status: 'approved',
+            loginId
+          }));
+          navigate('/staff-dashboard', { replace: true });
+        } else {
+          setError('❌ Invalid Professor Username/Email or Password. Or your account has not been created.');
+        }
+      } else if (roleParam === 'hod') {
+        // Check local storage accounts or demo accounts
+        const hodAccounts = JSON.parse(localStorage.getItem('helpdesk_hod_accounts') || '{}');
+        const lookupKey = loginId.trim().toLowerCase();
+        const foundHod = hodAccounts[lookupKey];
+
+        if (foundHod && foundHod.password === password) {
+          if (foundHod.status === 'pending_approval') {
+            setError('⏳ HOD Account Approval Pending: Your details have been submitted to Super Admin. Once approved in the Admin Portal, your HOD Portal will open automatically.');
+          } else {
+            localStorage.setItem('helpdesk_token', 'demo-hod-jwt-token-2026');
+            localStorage.setItem('helpdesk_user', JSON.stringify(foundHod));
+            navigate('/hod-dashboard', { replace: true });
+          }
+        } else if ((loginId === 'hod.cse' || loginId === 'hod_sharma') && password === 'hod12345') {
+          localStorage.setItem('helpdesk_token', 'demo-hod-jwt-token-2026');
+          localStorage.setItem('helpdesk_user', JSON.stringify({
+            name: 'Dr. R. K. Sharma',
+            role: 'hod',
+            email: 'hod.cse@xyzec.edu',
+            department: 'Computer Science & Engineering',
+            status: 'approved',
+            loginId
+          }));
+          navigate('/hod-dashboard', { replace: true });
+        } else {
+          setError('❌ Invalid HOD Username/Email or Password. Or your account has not been created.');
+        }
       } else {
         setError(err.message || 'Invalid Login ID or Password. Please check your credentials or request membership.');
       }
@@ -187,10 +249,10 @@ export default function Login() {
         {!isRegistering ? (
           <form onSubmit={handleLogin} className="login-form">
             <div className="form-group">
-              <label>{roleParam === 'super_admin' ? 'Executive Admin ID' : 'Registration ID / College Email'}</label>
+              <label>{roleParam === 'super_admin' ? 'Executive Admin ID' : (roleParam === 'staff' || roleParam === 'hod' ? 'Username OR Official Email ID' : 'Registration ID / College Email')}</label>
               <input
                 type="text"
-                placeholder={roleParam === 'super_admin' ? 'Enter Super Admin ID' : 'e.g., student@xyzec.edu or rohit.k'}
+                placeholder={roleParam === 'super_admin' ? 'Enter Super Admin ID' : (roleParam === 'staff' ? 'e.g. prof_cse or ramesh.cse@xyzec.edu' : roleParam === 'hod' ? 'e.g. hod_sharma or hod.cse@xyzec.edu' : 'e.g., student@xyzec.edu or rohit.k')}
                 value={loginId}
                 onChange={(e) => setLoginId(e.target.value)}
                 required
@@ -232,6 +294,22 @@ export default function Login() {
               <div style={{ textAlign: 'center', marginTop: '1rem' }}>
                 <Link to="/student-onboard" style={{ color: '#38bdf8', fontWeight: 700, fontSize: '0.95rem', textDecoration: 'none', display: 'inline-block', padding: '0.5rem 1rem', background: 'rgba(56, 189, 248, 0.1)', borderRadius: '20px', border: '1px solid #38bdf8' }}>
                   ✨ New Student? Launch 2-Step Onboarding Studio ➔
+                </Link>
+              </div>
+            )}
+
+            {roleParam === 'staff' && (
+              <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+                <Link to="/staff-onboard" style={{ color: '#a78bfa', fontWeight: 700, fontSize: '0.95rem', textDecoration: 'none', display: 'inline-block', padding: '0.5rem 1rem', background: 'rgba(139, 92, 246, 0.15)', borderRadius: '20px', border: '1px solid #a78bfa' }}>
+                  👨‍🏫 New Professor / Faculty? Feed Details & Register Account ➔
+                </Link>
+              </div>
+            )}
+
+            {roleParam === 'hod' && (
+              <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+                <Link to="/hod-onboard" style={{ color: '#f472b6', fontWeight: 700, fontSize: '0.95rem', textDecoration: 'none', display: 'inline-block', padding: '0.5rem 1rem', background: 'rgba(236, 72, 153, 0.15)', borderRadius: '20px', border: '1px solid #f472b6' }}>
+                  🏛️ New HOD? Feed Details & Register Executive Account ➔
                 </Link>
               </div>
             )}

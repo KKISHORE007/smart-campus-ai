@@ -21,8 +21,9 @@ import Login from './pages/Login.jsx';
 import EmptyDashboard from './pages/EmptyDashboard.jsx';
 import SuperAdminDashboard from './pages/SuperAdminDashboard.jsx';
 import Chat from './pages/Chat.jsx';
-import About from './pages/About.jsx';
 import StudentOnboard from './pages/StudentOnboard.jsx';
+import StaffOnboard from './pages/StaffOnboard.jsx';
+import HodOnboard from './pages/HodOnboard.jsx';
 import StudentDashboard from './pages/StudentDashboard.jsx';
 import StaffDashboard from './pages/StaffDashboard.jsx';
 import HodDashboard from './pages/HodDashboard.jsx';
@@ -59,7 +60,7 @@ function FridayButton({ location, navigate }) {
 function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const hideHeaderRoutes = ['/', '/signin', '/login', '/dashboard', '/super-admin', '/student-onboard', '/student-dashboard', '/staff-dashboard', '/hod-dashboard'];
+  const hideHeaderRoutes = ['/', '/signin', '/login', '/dashboard', '/super-admin', '/student-onboard', '/staff-onboard', '/hod-onboard', '/student-dashboard', '/staff-dashboard', '/hod-dashboard'];
   const shouldHideHeader = hideHeaderRoutes.includes(location.pathname);
 
   return (
@@ -70,6 +71,8 @@ function AppLayout() {
         <Route path="/signin" element={<RoleSelect />} />
         <Route path="/login" element={<Login />} />
         <Route path="/student-onboard" element={<StudentOnboard />} />
+        <Route path="/staff-onboard" element={<StaffOnboard />} />
+        <Route path="/hod-onboard" element={<HodOnboard />} />
         <Route
           path="/student-dashboard"
           element={
