@@ -535,6 +535,44 @@ export default function HodDashboard() {
             >
               <span>🕒</span> 5. Professor Attendance
             </button>
+
+            <button
+              onClick={() => { setActiveMenu('advisor_approvals'); setMenuOpen(false); setSearchTerm(''); }}
+              style={{
+                padding: '0.9rem 1rem',
+                borderRadius: '12px',
+                border: activeMenu === 'advisor_approvals' ? '1px solid #f472b6' : '1px solid transparent',
+                background: activeMenu === 'advisor_approvals' ? 'rgba(236, 72, 153, 0.2)' : 'transparent',
+                color: activeMenu === 'advisor_approvals' ? '#f472b6' : '#cbd5e1',
+                fontWeight: 700,
+                textAlign: 'left',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                cursor: 'pointer'
+              }}
+            >
+              <span>🔄</span> 6. Advisor Role Requests
+            </button>
+
+            <button
+              onClick={() => { setActiveMenu('announcements'); setMenuOpen(false); setSearchTerm(''); }}
+              style={{
+                padding: '0.9rem 1rem',
+                borderRadius: '12px',
+                border: activeMenu === 'announcements' ? '1px solid #f472b6' : '1px solid transparent',
+                background: activeMenu === 'announcements' ? 'rgba(236, 72, 153, 0.2)' : 'transparent',
+                color: activeMenu === 'announcements' ? '#f472b6' : '#cbd5e1',
+                fontWeight: 700,
+                textAlign: 'left',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                cursor: 'pointer'
+              }}
+            >
+              <span>📢</span> 7. Student Announcements
+            </button>
           </aside>
         )}
 
@@ -1020,6 +1058,153 @@ export default function HodDashboard() {
                     </div>
                   </div>
                 ))}
+              </div>
+            </div>
+          )}
+          {/* =========================================================
+              MODULE 6: ADVISOR ROLE REQUESTS & APPROVALS
+              ========================================================= */}
+          {activeMenu === 'advisor_approvals' && (
+            <div>
+              <div style={{ marginBottom: '2rem' }}>
+                <h2 style={{ margin: 0, fontSize: '1.8rem', fontWeight: 800 }}>6. Professor Class Advisor Role Requests</h2>
+                <p style={{ color: '#94a3b8', margin: '4px 0 0 0' }}>
+                  Hierarchy oversight: Review and approve requests from faculty to assume or resign Section Class Advisorship. Only one Advisor per Section permitted.
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                {(() => {
+                  const reqs = JSON.parse(localStorage.getItem('helpdesk_advisor_requests') || '[]');
+                  if (reqs.length === 0) {
+                    return (
+                      <div style={{ background: 'rgba(30, 41, 59, 0.7)', padding: '3rem', borderRadius: '16px', textAlign: 'center', color: '#94a3b8' }}>
+                        No pending Advisor Role requests from faculty at this time.
+                      </div>
+                    );
+                  }
+                  return reqs.map((r, idx) => (
+                    <div key={r.id || idx} style={{ background: 'rgba(15, 23, 42, 0.8)', padding: '1.8rem', borderRadius: '16px', border: '1px solid rgba(236, 72, 153, 0.4)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                          <span style={{ fontSize: '1.2rem' }}>👨‍🏫</span>
+                          <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#fbcfe8' }}>{r.profName} ({r.profEmail})</h3>
+                        </div>
+                        <div style={{ fontSize: '0.9rem', color: '#cbd5e1', marginBottom: '6px' }}>
+                          Current Role: <strong>{r.currentRole}</strong> (Sec {r.currentSection}) ➔ Requested Role: <strong style={{ color: '#f472b6' }}>{r.requestedRole}</strong> {r.requestedRole === 'class_advisor' ? `(Section ${r.requestedSection})` : ''}
+                        </div>
+                        <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>Reason: "{r.reason}" • Submitted: {r.date}</div>
+                      </div>
+
+                      {r.status === 'pending_hod_approval' ? (
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                          <button
+                            onClick={() => {
+                              const updated = reqs.map(i => i.id === r.id ? { ...i, status: 'approved' } : i);
+                              localStorage.setItem('helpdesk_advisor_requests', JSON.stringify(updated));
+                              alert(`✅ Approved role switch for ${r.profName}! Database updated.`);
+                              window.location.reload();
+                            }}
+                            style={{ padding: '0.75rem 1.4rem', borderRadius: '10px', background: '#10b981', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer' }}
+                          >
+                            Approve Switch ✅
+                          </button>
+                          <button
+                            onClick={() => {
+                              const updated = reqs.map(i => i.id === r.id ? { ...i, status: 'rejected' } : i);
+                              localStorage.setItem('helpdesk_advisor_requests', JSON.stringify(updated));
+                              alert(`❌ Rejected request for ${r.profName}.`);
+                              window.location.reload();
+                            }}
+                            style={{ padding: '0.75rem 1.4rem', borderRadius: '10px', background: '#ef4444', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer' }}
+                          >
+                            Reject ❌
+                          </button>
+                        </div>
+                      ) : (
+                        <span style={{ padding: '6px 14px', borderRadius: '20px', fontWeight: 800, background: r.status === 'approved' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)', color: r.status === 'approved' ? '#34d399' : '#f87171' }}>
+                          {r.status.toUpperCase()}
+                        </span>
+                      )}
+                    </div>
+                  ));
+                })()}
+              </div>
+            </div>
+          )}
+
+          {/* =========================================================
+              MODULE 7: HOD STUDENT ANNOUNCEMENT BROADCAST STUDIO
+              ========================================================= */}
+          {activeMenu === 'announcements' && (
+            <div>
+              <div style={{ marginBottom: '2rem' }}>
+                <h2 style={{ margin: 0, fontSize: '1.8rem', fontWeight: 800 }}>7. HOD Student Announcement Broadcast Studio</h2>
+                <p style={{ color: '#94a3b8', margin: '4px 0 0 0' }}>
+                  Broadcast department-wide messages and media attachments directly to all students in the HOD Announcements tab.
+                </p>
+              </div>
+
+              <div style={{ background: 'rgba(15, 23, 42, 0.8)', padding: '2rem', borderRadius: '18px', border: '1px solid rgba(236, 72, 153, 0.4)', maxWidth: '720px' }}>
+                <h3 style={{ margin: '0 0 1.2rem 0', color: '#f472b6' }}>Create Official Department Notice</h3>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const titleEl = e.target.elements.hodTitle;
+                    const msgEl = e.target.elements.hodMsg;
+                    const urlEl = e.target.elements.hodMediaUrl;
+                    const typeEl = e.target.elements.hodMediaType;
+
+                    const newAnn = {
+                      id: Date.now(),
+                      hodName: hodProfile.name,
+                      title: titleEl.value,
+                      message: msgEl.value,
+                      attachmentUrl: urlEl.value.trim(),
+                      attachmentType: typeEl.value,
+                      date: new Date().toLocaleDateString('en-GB')
+                    };
+
+                    const existing = JSON.parse(localStorage.getItem('helpdesk_hod_announcements') || '[]');
+                    const updated = [newAnn, ...existing];
+                    localStorage.setItem('helpdesk_hod_announcements', JSON.stringify(updated));
+
+                    titleEl.value = '';
+                    msgEl.value = '';
+                    urlEl.value = '';
+                    alert('📢 Successfully broadcasted HOD notice to all Student Portals!');
+                  }}
+                  style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}
+                >
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#fbcfe8', marginBottom: '6px' }}>ANNOUNCEMENT HEADLINE *</label>
+                    <input name="hodTitle" type="text" placeholder="e.g. End-Semester Lab Evaluation Schedule" required style={{ width: '100%', padding: '0.8rem 1rem', borderRadius: '10px', background: '#0f172a', border: '1px solid rgba(255,255,255,0.2)', color: 'white' }} />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#fbcfe8', marginBottom: '6px' }}>WHATSAPP STYLE MESSAGE *</label>
+                    <textarea name="hodMsg" rows={4} placeholder="Type department instructions..." required style={{ width: '100%', padding: '0.8rem 1rem', borderRadius: '10px', background: '#0f172a', border: '1px solid rgba(255,255,255,0.2)', color: 'white' }} />
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1rem' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#fbcfe8', marginBottom: '6px' }}>ATTACHMENT MEDIA URL (OPTIONAL)</label>
+                      <input name="hodMediaUrl" type="text" placeholder="https://image.or.video/url" style={{ width: '100%', padding: '0.8rem 1rem', borderRadius: '10px', background: '#0f172a', border: '1px solid rgba(255,255,255,0.2)', color: 'white' }} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#fbcfe8', marginBottom: '6px' }}>MEDIA TYPE</label>
+                      <select name="hodMediaType" style={{ width: '100%', padding: '0.8rem 1rem', borderRadius: '10px', background: '#1e293b', border: '1px solid rgba(255,255,255,0.2)', color: 'white' }}>
+                        <option value="image">📷 Image</option>
+                        <option value="video">🎥 Video URL</option>
+                        <option value="document">📄 Document Link</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <button type="submit" style={{ padding: '1rem', borderRadius: '12px', background: 'linear-gradient(135deg, #ec4899 0%, #be185d 100%)', color: 'white', border: 'none', fontWeight: 800, fontSize: '1rem', cursor: 'pointer' }}>
+                    📢 Broadcast HOD Announcement to Students ➔
+                  </button>
+                </form>
               </div>
             </div>
           )}
