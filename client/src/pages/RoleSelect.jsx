@@ -29,30 +29,35 @@ export default function RoleSelect() {
       colorClass: 'role-student',
       isHighlight: true,
       path: '/student-onboard',
+      btnText: 'Proceed to Student Portal ➔'
     },
     {
-      id: 'professor',
+      id: 'staff',
       title: 'Professor Portal',
-      icon: '👔',
-      badge: '🔒 Coming Next (Locked)',
-      desc: 'Grading dashboard, internal test marks posting, and attendance analytics.',
-      colorClass: 'role-black',
-      isLocked: true,
+      icon: '👨‍🏫',
+      badge: 'Faculty & Class Advisors',
+      desc: 'Grading dashboard, internal test marks posting, class advisor section cohorts, and attendance analytics.',
+      colorClass: 'role-student',
+      isHighlight: true,
+      path: '/staff-onboard',
+      btnText: 'Proceed to Professor Portal ➔'
     },
     {
       id: 'hod',
       title: 'HOD Portal',
       icon: '🏛️',
-      badge: '🔒 Coming Next (Locked)',
-      desc: 'Departmental curriculum oversight, faculty review, and administrative fee approval.',
-      colorClass: 'role-black',
-      isLocked: true,
+      badge: 'Executive Leadership',
+      desc: 'Departmental curriculum oversight, faculty review, 8-semester grading analytics, and fee approvals.',
+      colorClass: 'role-student',
+      isHighlight: true,
+      path: '/hod-onboard',
+      btnText: 'Proceed to HOD Portal ➔'
     },
   ];
 
   const handleSelectRole = (role) => {
     if (role.isLocked) {
-      alert(`⏳ ${role.title} grading & management dashboard is scheduled for the next development phase! For now, please explore and test the interactive Student Portal.`);
+      alert(`⏳ ${role.title} is scheduled for the next development phase!`);
       return;
     }
     if (role.path) {
@@ -92,7 +97,7 @@ export default function RoleSelect() {
               className="btn-role-select"
               style={role.isLocked ? { background: 'rgba(255,255,255,0.05)', color: '#64748b', border: '1px solid #1e293b' } : { background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' }}
             >
-              {role.isLocked ? '🔒 Dashboard Next Release' : 'Proceed to Student Portal ➔'}
+              {role.isLocked ? '🔒 Dashboard Next Release' : (role.btnText || 'Proceed to Portal ➔')}
             </button>
           </div>
         ))}
@@ -100,12 +105,24 @@ export default function RoleSelect() {
 
       <div className="role-select-footer">
         <p>🔒 System verifies registered membership before authorizing access.</p>
-        <div style={{ marginTop: '1rem' }}>
+        <div style={{ marginTop: '1rem', display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
           <button
             onClick={() => navigate('/login?role=student')}
-            style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: 600, background: 'rgba(59, 130, 246, 0.1)', padding: '0.6rem 1.2rem', borderRadius: '20px', border: '1px solid #3b82f6', display: 'inline-block', cursor: 'pointer' }}
+            style={{ color: '#38bdf8', textDecoration: 'none', fontWeight: 600, background: 'rgba(56, 189, 248, 0.1)', padding: '0.6rem 1.2rem', borderRadius: '20px', border: '1px solid #38bdf8', cursor: 'pointer' }}
           >
-            🔑 Already an existing Student? Direct Member Login ➔
+            🔑 Existing Student Login ➔
+          </button>
+          <button
+            onClick={() => navigate('/login?role=staff')}
+            style={{ color: '#a78bfa', textDecoration: 'none', fontWeight: 600, background: 'rgba(139, 92, 246, 0.15)', padding: '0.6rem 1.2rem', borderRadius: '20px', border: '1px solid #a78bfa', cursor: 'pointer' }}
+          >
+            👨‍🏫 Existing Professor Login ➔
+          </button>
+          <button
+            onClick={() => navigate('/login?role=hod')}
+            style={{ color: '#f472b6', textDecoration: 'none', fontWeight: 600, background: 'rgba(236, 72, 153, 0.15)', padding: '0.6rem 1.2rem', borderRadius: '20px', border: '1px solid #f472b6', cursor: 'pointer' }}
+          >
+            🏛️ Existing HOD Login ➔
           </button>
         </div>
       </div>
