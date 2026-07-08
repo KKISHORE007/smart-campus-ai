@@ -122,6 +122,32 @@ export default function StaffOnboard() {
     }
   };
 
+  // Password Strength Calculation
+  const getPasswordStrength = (pass) => {
+    if (!pass) return { score: 0, label: 'None', color: '#64748b', percentage: 0 };
+    let score = 0;
+    if (pass.length >= 6) score += 1;
+    if (pass.length >= 8) score += 1;
+    if (/[A-Z]/.test(pass)) score += 1;
+    if (/[0-9]/.test(pass)) score += 1;
+    if (/[^A-Za-z0-9]/.test(pass)) score += 1;
+
+    switch (score) {
+      case 1:
+      case 2:
+        return { score, label: 'Weak ⚠️', color: '#ef4444', percentage: 33 };
+      case 3:
+      case 4:
+        return { score, label: 'Good 🟡', color: '#f59e0b', percentage: 66 };
+      case 5:
+        return { score, label: 'Strong / Unbreakable 🛡️', color: '#10b981', percentage: 100 };
+      default:
+        return { score: 0, label: 'Too Short', color: '#ef4444', percentage: 15 };
+    }
+  };
+
+  const strength = getPasswordStrength(password);
+
   const validateStep1 = () => {
     setError(null);
     if (!name.trim() || !email.trim() || !joiningDate || !dob) {
@@ -609,6 +635,24 @@ export default function StaffOnboard() {
                     {showPassword ? '🙈' : '👁️'}
                   </button>
                 </div>
+
+                {/* LIVE PASSWORD STRENGTH METER */}
+                {password && (
+                  <div style={{ marginTop: '0.6rem', background: 'rgba(2, 6, 23, 0.6)', padding: '0.8rem', borderRadius: '8px', border: '1px solid rgba(167, 139, 250, 0.2)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', marginBottom: '6px' }}>
+                      <span style={{ color: '#cbd5e1' }}>Password Strength:</span>
+                      <strong style={{ color: strength.color }}>{strength.label}</strong>
+                    </div>
+                    <div style={{ width: '100%', height: '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '4px', overflow: 'hidden' }}>
+                      <div style={{ width: `${strength.percentage}%`, height: '100%', background: strength.color, transition: 'all 0.3s ease' }} />
+                    </div>
+                    <ul style={{ margin: '0.5rem 0 0 0', paddingLeft: '1.2rem', fontSize: '0.73rem', color: '#94a3b8' }}>
+                      <li style={{ color: password.length >= 8 ? '#10b981' : '#94a3b8' }}>At least 8 characters</li>
+                      <li style={{ color: /[A-Z]/.test(password) && /[0-9]/.test(password) ? '#10b981' : '#94a3b8' }}>Contains uppercase letter & number</li>
+                      <li style={{ color: /[^A-Za-z0-9]/.test(password) ? '#10b981' : '#94a3b8' }}>Contains symbol (@, #, $, !, etc.)</li>
+                    </ul>
+                  </div>
+                )}
               </div>
 
               <div>
