@@ -73,14 +73,18 @@ export default function StaffOnboard() {
   // Webcam controls
   const startCamera = async () => {
     setCameraError(null);
+    setCameraActive(true);
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        setCameraActive(true);
-      }
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.play().catch(() => {});
+        }
+      }, 100);
     } catch (err) {
       setCameraError('⚠️ Camera permission denied or device unavailable.');
+      setCameraActive(false);
     }
   };
 
@@ -504,21 +508,39 @@ export default function StaffOnboard() {
               </div>
 
               {cameraActive && (
-                <div style={{ marginTop: '1rem', background: '#09090b', padding: '1rem', borderRadius: '14px', textAlign: 'center' }}>
-                  <video ref={videoRef} autoPlay playsInline style={{ width: '100%', maxWidth: '360px', borderRadius: '12px' }} />
+                <div style={{ marginTop: '1.2rem', background: '#020617', padding: '1.5rem', borderRadius: '18px', border: '2px solid #a78bfa', textAlign: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.6)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '12px', color: '#fbcfe8', fontWeight: 800, fontSize: '0.9rem' }}>
+                    <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ef4444', display: 'inline-block', boxShadow: '0 0 10px #ef4444' }} />
+                    LIVE CAMERA FEED — Position your face clearly inside the frame
+                  </div>
+                  <video
+                    ref={videoRef}
+                    autoPlay
+                    playsInline
+                    muted
+                    style={{
+                      width: '100%',
+                      maxWidth: '440px',
+                      minHeight: '280px',
+                      borderRadius: '14px',
+                      background: '#0f172a',
+                      border: '2px solid rgba(255,255,255,0.2)',
+                      transform: 'scaleX(-1)'
+                    }}
+                  />
                   <canvas ref={canvasRef} style={{ display: 'none' }} />
-                  <div style={{ marginTop: '10px', display: 'flex', gap: '10px', justifyContent: 'center' }}>
+                  <div style={{ marginTop: '14px', display: 'flex', gap: '12px', justifyContent: 'center' }}>
                     <button
                       type="button"
                       onClick={capturePhoto}
-                      style={{ padding: '8px 16px', borderRadius: '8px', background: '#10b981', color: 'white', border: 'none', fontWeight: 700, cursor: 'pointer' }}
+                      style={{ padding: '0.8rem 1.8rem', borderRadius: '10px', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', color: 'white', border: 'none', fontWeight: 800, fontSize: '0.95rem', cursor: 'pointer', boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)' }}
                     >
-                      ✅ Snap Photo
+                      📸 Snap & Save Photo
                     </button>
                     <button
                       type="button"
                       onClick={stopCamera}
-                      style={{ padding: '8px 16px', borderRadius: '8px', background: '#ef4444', color: 'white', border: 'none', fontWeight: 700, cursor: 'pointer' }}
+                      style={{ padding: '0.8rem 1.4rem', borderRadius: '10px', background: 'rgba(239, 68, 68, 0.2)', color: '#fca5a5', border: '1px solid #ef4444', fontWeight: 700, cursor: 'pointer' }}
                     >
                       ✕ Close Camera
                     </button>
