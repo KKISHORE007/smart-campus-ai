@@ -48,10 +48,28 @@ export default function LandingPage() {
 
   // Fetch live public info (carousel slides & announcements)
   useEffect(() => {
+    const localBranding = JSON.parse(localStorage.getItem('smart_campus_branding') || 'null');
+    const localAnn = JSON.parse(localStorage.getItem('helpdesk_announcements') || 'null');
+
+    if (localBranding) {
+      setInstitution(prev => ({
+        ...prev,
+        name: localBranding.name || 'XYZ Engineering College',
+        heroCarouselImages: [
+          localBranding.coverPhoto,
+          ...(localBranding.slides ? localBranding.slides.map(s => s.url) : [])
+        ].filter(Boolean)
+      }));
+    }
+
+    if (localAnn) {
+      setAnnouncements(localAnn);
+    }
+
     getPublicInfo()
       .then((data) => {
-        if (data.institution) setInstitution(data.institution);
-        if (data.announcements) setAnnouncements(data.announcements);
+        if (data.institution && !localBranding) setInstitution(data.institution);
+        if (data.announcements && !localAnn) setAnnouncements(data.announcements);
         if (data.feeStructure) setFeeStructure(data.feeStructure);
       })
       .catch((err) => console.warn('Could not fetch public info, using defaults:', err.message));
