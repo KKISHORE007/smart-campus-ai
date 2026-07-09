@@ -17,6 +17,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import { registerUser } from '../services/api.js';
 
 export default function StudentOnboard() {
   const { login, directLogin, institution } = useAuth();
@@ -168,21 +169,33 @@ export default function StudentOnboard() {
         department,
         role: 'student',
         photoUrl: photoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80', // Default clean avatar
-        status: 'approved',
+        status: 'pending_approval',
+        password,
         bio: `Enrolled in ${department}, Batch of ${joinYear}. Exam Roll No: ${registerNo.trim().toUpperCase()}.`,
         email: loginId.includes('@') ? loginId.trim() : `${loginId.trim()}@xyzec.edu`,
         phone: '+91 98765 43210'
       };
 
-      // Save custom profile to local storage so Student Dashboard can read and edit it
-      localStorage.setItem('helpdesk_custom_profile', JSON.stringify(customProfile));
-      localStorage.setItem('helpdesk_student_grades', JSON.stringify({})); // Initialize empty grades or default
+      // Save to backend database
+      try {
+        await registerUser(customProfile);
+      } catch (e) {
+        console.warn('Backend registration note:', e.message);
+      }
 
-      // Instantly log in via directLogin to sync context state and open Student Dashboard!
-      directLogin(customProfile, 'demo-student-jwt-token-2026');
+      // Save to pending students queue
+      const pendingStudents = JSON.parse(localStorage.getItem('helpdesk_pending_students') || '[]');
+      pendingStudents.push(customProfile);
+      localStorage.setItem('helpdesk_pending_students', JSON.stringify(pendingStudents));
 
-      // Navigate directly to student dashboard!
-      navigate('/student-dashboard', { replace: true });
+      // Also register into local accounts dictionary with pending_approval status
+      const accounts = JSON.parse(localStorage.getItem('helpdesk_student_accounts') || '{}');
+      accounts[customProfile.loginId.toLowerCase()] = customProfile;
+      accounts[customProfile.email.toLowerCase()] = customProfile;
+      accounts[customProfile.registerNo.toLowerCase()] = customProfile;
+      localStorage.setItem('helpdesk_student_accounts', JSON.stringify(accounts));
+
+      setStep('submitted');
     } catch (err) {
       setError('Failed to create account: ' + (err.message || 'Unknown error'));
     } finally {
@@ -496,10 +509,40 @@ export default function StudentOnboard() {
                 style={{ flex: 2, background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', margin: 0 }}
                 disabled={loading}
               >
-                {loading ? 'Creating Student Account...' : '🚀 Complete & Enter Dashboard'}
+                {loading ? 'Creating Student Account...' : '🚀 Submit Registration for Approval'}
               </button>
             </div>
           </form>
+        )}
+
+        {step === 'submitted' && (
+          <div style={{ textAlign: 'center', padding: '2.5rem 1rem' }}>
+            <div style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>⏳</div>
+            <h3 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#fbbf24', margin: '0 0 1rem 0' }}>
+              Registration Submitted for Super Admin Approval!
+            </h3>
+            <p style={{ color: '#cbd5e1', lineHeight: 1.6, maxWidth: '520px', margin: '0 auto 1.5rem auto', fontSize: '0.95rem' }}>
+              Your Student Portal account has been registered under <strong>Waiting for Approval</strong> status. You cannot access the Student Portal until the Executive Super Admin verifies and approves your membership.
+            </p>
+            <div style={{ background: 'rgba(245, 158, 11, 0.15)', border: '1px solid rgba(245, 158, 11, 0.4)', padding: '1rem', borderRadius: '12px', marginBottom: '1.8rem', color: '#fcd34d', fontSize: '0.88rem' }}>
+              🔒 Security Enforcement: Unverified self-registrations require manual activation in the Super Admin Executive Board.
+            </div>
+            <button
+              onClick={() => navigate('/login')}
+              style={{
+                padding: '0.9rem 2rem',
+                borderRadius: '12px',
+                background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                color: 'white',
+                border: 'none',
+                fontWeight: 800,
+                fontSize: '1rem',
+                cursor: 'pointer'
+              }}
+            >
+              Return to Login Page ➔
+            </button>
+          </div>
         )}
 
       </div>

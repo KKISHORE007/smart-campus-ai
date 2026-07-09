@@ -176,20 +176,33 @@ export default function SuperAdminDashboard() {
   const handleRejectAccount = (role, key) => {
     if (role === 'student') {
       const updated = { ...studentAccounts };
-      delete updated[key];
+      if (updated[key]) {
+        updated[key].status = 'deleted';
+      } else {
+        updated[key] = { status: 'deleted' };
+      }
       localStorage.setItem('helpdesk_student_accounts', JSON.stringify(updated));
       setStudentAccounts(updated);
     } else if (role === 'professor') {
       const updated = { ...professorAccounts };
-      delete updated[key];
+      if (updated[key]) {
+        updated[key].status = 'deleted';
+      } else {
+        updated[key] = { status: 'deleted' };
+      }
       localStorage.setItem('helpdesk_professor_accounts', JSON.stringify(updated));
       setProfessorAccounts(updated);
     } else if (role === 'hod') {
       const updated = { ...hodAccounts };
-      delete updated[key];
+      if (updated[key]) {
+        updated[key].status = 'deleted';
+      } else {
+        updated[key] = { status: 'deleted' };
+      }
       localStorage.setItem('helpdesk_hod_accounts', JSON.stringify(updated));
       setHodAccounts(updated);
     }
+    alert('🗑️ Account deleted / rejected successfully. Access for this ID is now permanently blocked.');
   };
 
   // Handler for Pre-Approval Direct Account Creation
@@ -748,7 +761,7 @@ export default function SuperAdminDashboard() {
                       </tr>
                     </thead>
                     <tbody>
-                      {Object.entries(studentAccounts).map(([key, u]) => (
+                      {Object.entries(studentAccounts).filter(([_, u]) => u.status !== 'deleted').map(([key, u]) => (
                         <tr key={key} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '0.9rem' }}>
                           <td style={{ padding: '1rem', fontWeight: 700 }}>{u.name}</td>
                           <td style={{ padding: '1rem' }}>{u.registerNo || u.email}</td>
@@ -766,7 +779,7 @@ export default function SuperAdminDashboard() {
                           </td>
                         </tr>
                       ))}
-                      {Object.keys(studentAccounts).length === 0 && (
+                      {Object.keys(studentAccounts).filter(k => studentAccounts[k]?.status !== 'deleted').length === 0 && (
                         <tr>
                           <td colSpan={6} style={{ padding: '2rem', textAlign: 'center', color: '#64748b' }}>
                             No custom students registered yet. Students created via public signup or Pre-Approval appear here.
@@ -792,7 +805,7 @@ export default function SuperAdminDashboard() {
                       </tr>
                     </thead>
                     <tbody>
-                      {Object.entries(professorAccounts).map(([key, u]) => (
+                      {Object.entries(professorAccounts).filter(([_, u]) => u.status !== 'deleted').map(([key, u]) => (
                         <tr key={key} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '0.9rem' }}>
                           <td style={{ padding: '1rem', fontWeight: 700 }}>{u.name}</td>
                           <td style={{ padding: '1rem' }}>{u.username || u.email}</td>
@@ -829,7 +842,7 @@ export default function SuperAdminDashboard() {
                       </tr>
                     </thead>
                     <tbody>
-                      {Object.entries(hodAccounts).map(([key, u]) => (
+                      {Object.entries(hodAccounts).filter(([_, u]) => u.status !== 'deleted').map(([key, u]) => (
                         <tr key={key} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '0.9rem' }}>
                           <td style={{ padding: '1rem', fontWeight: 700 }}>{u.name}</td>
                           <td style={{ padding: '1rem' }}>{u.username || u.email}</td>

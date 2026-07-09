@@ -17,6 +17,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import { registerUser } from '../services/api.js';
 
 export default function HodOnboard() {
   const { directLogin, institution } = useAuth();
@@ -202,6 +203,10 @@ export default function HodOnboard() {
         status: 'pending_approval',
         createdAt: new Date().toLocaleDateString('en-GB')
       };
+
+      try {
+        registerUser(newHodUser);
+      } catch (e) {}
 
       try {
         // Save to pending approvals queue for Super Admin

@@ -19,6 +19,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import { registerUser } from '../services/api.js';
 
 export default function StaffOnboard() {
   const { directLogin, institution } = useAuth();
@@ -214,6 +215,11 @@ export default function StaffOnboard() {
         status: 'pending_approval',
         createdAt: new Date().toLocaleDateString('en-GB')
       };
+
+      // Save to backend database
+      try {
+        registerUser(newStaffUser);
+      } catch (e) {}
 
       // Save to pending approvals queue for Super Admin
       try {

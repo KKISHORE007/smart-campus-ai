@@ -18,6 +18,7 @@ import Institution from '../models/Institution.js';
 import User from '../models/User.js';
 import * as ragService from '../services/ragService.js';
 import * as mockStore from '../services/mockStore.js';
+import { dbStore } from '../services/dbStore.js';
 import { authenticate, requireAdmin } from '../middleware/auth.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import logger from '../utils/logger.js';
@@ -301,35 +302,34 @@ router.delete(
 router.get(
   '/announcements',
   asyncHandler(async (_req, res) => {
-    res.status(200).json({ success: true, count: mockStore.mockAnnouncements.length, items: mockStore.mockAnnouncements });
+    const list = dbStore.getAnnouncements();
+    res.status(200).json({ success: true, count: list.length, items: list });
   })
 );
 
 router.post(
   '/announcements',
   asyncHandler(async (req, res) => {
-    const { title, targetRole, priority, content } = req.body;
+    const { title, targetRole, priority, content, authorRole, authorName } = req.body;
     if (!title || !content) throw new AppError('Title and content required', 400);
 
-    const newAnn = {
-      id: 'ann-' + Math.random().toString(36).substring(2, 9),
+    const newAnn = dbStore.addAnnouncement({
       title,
       targetRole: targetRole || 'all',
+      authorRole: authorRole || 'super_admin',
+      authorName: authorName || 'Executive Super Admin',
       priority: priority || 'medium',
-      date: new Date().toISOString().split('T')[0],
       content,
-    };
-    mockStore.mockAnnouncements.unshift(newAnn);
-    res.status(201).json({ success: true, message: 'Announcement broadcasted', item: newAnn });
+    });
+    res.status(201).json({ success: true, message: 'Announcement broadcasted & saved to database', item: newAnn });
   })
 );
 
 router.delete(
   '/announcements/:id',
   asyncHandler(async (req, res) => {
-    const idx = mockStore.mockAnnouncements.findIndex((a) => a.id === req.params.id);
-    if (idx !== -1) mockStore.mockAnnouncements.splice(idx, 1);
-    res.status(200).json({ success: true, message: 'Announcement deleted' });
+    dbStore.deleteAnnouncement(req.params.id);
+    res.status(200).json({ success: true, message: 'Announcement deleted from database' });
   })
 );
 
@@ -340,44 +340,41 @@ router.delete(
 router.get(
   '/users',
   asyncHandler(async (_req, res) => {
-    if (isDbConnected()) {
-      const users = await User.find({});
-      return res.status(200).json({ success: true, count: users.length, items: users });
-    }
-    res.status(200).json({
-      success: true,
-      count: mockStore.mockUsers.length,
-      items: mockStore.mockUsers,
-    });
+    const users = dbStore.getUsers();
+    res.status(200).json({ success: true, count: users.length, items: users });
   })
 );
 
 router.post(
   '/users',
   asyncHandler(async (req, res) => {
-    const { userId, loginId, email, name, role, department, password } = req.body;
+    const { userId, loginId, email, name, role, department, password, registerNo, section, status } = req.body;
     if (!email || !name || !role) throw new AppError('Email, name, and role required', 400);
 
     const newUser = {
       userId: userId || 'USR-' + Math.random().toString(36).substring(2, 6).toUpperCase(),
       loginId: loginId || email.split('@')[0],
-      email,
+      email: email.toLowerCase(),
       password: password || 'default123',
       name,
       role,
       department: department || 'General Engineering',
+      registerNo: registerNo || '',
+      section: section || 'A',
       institutionId: 'inst-xyz-001',
       isActive: true,
-      status: 'approved',
+      status: status || 'approved',
     };
 
+    const saved = dbStore.saveUser(newUser);
+
     if (isDbConnected()) {
-      const created = await User.create(newUser);
-      return res.status(201).json({ success: true, message: 'User added to MongoDB', item: created });
+      try {
+        await User.create(saved);
+      } catch (err) {}
     }
 
-    mockStore.mockUsers.push(newUser);
-    res.status(201).json({ success: true, message: 'User added (Offline Store)', item: newUser });
+    res.status(201).json({ success: true, message: 'User added and saved to database', item: saved });
   })
 );
 
@@ -386,24 +383,14 @@ router.put(
   asyncHandler(async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
-    if (!['pending', 'approved', 'rejected'].includes(status)) {
+    if (!['pending', 'pending_approval', 'approved', 'rejected', 'deleted'].includes(status)) {
       throw new AppError('Invalid status value', 400);
     }
 
-    if (isDbConnected()) {
-      const updated = await User.findOneAndUpdate(
-        { $or: [{ userId: id }, { _id: id }] },
-        { status },
-        { new: true }
-      );
-      if (!updated) throw new AppError('User not found in MongoDB', 404);
-      return res.status(200).json({ success: true, message: `User status updated to ${status}`, item: updated });
-    }
+    const updated = dbStore.updateUserStatus(id, status);
+    if (!updated) throw new AppError('User not found in database', 404);
 
-    const user = mockStore.mockUsers.find((u) => u.userId === id || u.email === id || u.loginId === id);
-    if (!user) throw new AppError('User not found in Offline Store', 404);
-    user.status = status;
-    res.status(200).json({ success: true, message: `User status updated to ${status} (Offline Store)`, item: user });
+    res.status(200).json({ success: true, message: `User status updated to ${status} in database`, item: updated });
   })
 );
 
@@ -411,13 +398,26 @@ router.delete(
   '/users/:id',
   asyncHandler(async (req, res) => {
     const { id } = req.params;
-    if (isDbConnected()) {
-      await User.findOneAndDelete({ $or: [{ userId: id }, { _id: id }] });
-      return res.status(200).json({ success: true, message: 'User deleted from MongoDB' });
-    }
-    const idx = mockStore.mockUsers.findIndex((u) => u.userId === id || u.email === id || u.loginId === id);
-    if (idx !== -1) mockStore.mockUsers.splice(idx, 1);
-    res.status(200).json({ success: true, message: 'User deleted' });
+    const updated = dbStore.updateUserStatus(id, 'deleted');
+    res.status(200).json({ success: true, message: 'User marked as deleted in database', item: updated });
+  })
+);
+
+// Fee Structure APIs
+router.get(
+  '/fees/structure',
+  asyncHandler(async (_req, res) => {
+    const feeStructures = dbStore.getFeeStructures();
+    res.status(200).json({ success: true, feeStructures });
+  })
+);
+
+router.post(
+  '/fees/structure',
+  asyncHandler(async (req, res) => {
+    const { key, data } = req.body;
+    const saved = dbStore.saveFeeStructure(key, data);
+    res.status(200).json({ success: true, message: 'Fee structure saved to database', item: saved });
   })
 );
 

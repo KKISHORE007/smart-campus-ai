@@ -121,29 +121,59 @@ export function AuthProvider({ children }) {
         return hodUser;
       }
 
-      if (credentials.role === 'staff' || lookupKey.includes('staff')) {
-        const staffUser = { name: 'Prof. Anita Desai', role: 'staff', email: 'staff.lib@xyzec.edu', department: 'Library / Admin', status: 'approved', loginId: credentials.loginId };
-        directLogin(staffUser, 'demo-staff-jwt-token-2026');
-        return staffUser;
+      if (credentials.role === 'staff') {
+        const profAccounts = JSON.parse(localStorage.getItem('helpdesk_professor_accounts') || '{}');
+        const foundProf = profAccounts[lookupKey];
+        if (foundProf && foundProf.password === credentials.password) {
+          if (foundProf.status === 'approved') {
+            directLogin(foundProf, 'demo-staff-jwt-token-2026');
+          }
+          return foundProf;
+        }
+        if ((lookupKey === 'staff.lib' || lookupKey === 'prof_cse') && credentials.password === 'staff12345') {
+          const defaultStaff = {
+            name: 'Dr. Ramesh Kumar',
+            role: 'staff',
+            staffType: 'class_advisor',
+            section: 'A',
+            advisorYear: '2nd Year',
+            email: 'ramesh.cse@xyzec.edu',
+            department: 'Computer Science & Engineering',
+            status: 'approved',
+            loginId: credentials.loginId
+          };
+          directLogin(defaultStaff, 'demo-staff-jwt-token-2026');
+          return defaultStaff;
+        }
+        throw new Error('Invalid Professor Username/Email or Password. Or your account has not been approved/created by Super Admin.');
       }
 
-      // Default / Student role: check saved local accounts or create clean student profile!
+      // Default / Student role: check saved local accounts strictly
       const accounts = JSON.parse(localStorage.getItem('helpdesk_student_accounts') || '{}');
-      const found = accounts[lookupKey] || JSON.parse(localStorage.getItem('helpdesk_custom_profile') || 'null');
-      const studentUser = found || {
-        name: credentials.loginId?.split('@')[0] || 'Student Member',
-        role: 'student',
-        loginId: credentials.loginId || 'student@xyzec.edu',
-        email: credentials.loginId?.includes('@') ? credentials.loginId : `${credentials.loginId}@xyzec.edu`,
-        registerNo: credentials.loginId?.toUpperCase() || 'REG-2026-0001',
-        department: 'Computer Science & Engineering',
-        joinYear: '2026',
-        status: 'approved',
-        photoUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
-        bio: `Enrolled in Computer Science & Engineering, Batch of 2026.`
-      };
-      directLogin(studentUser, 'demo-student-jwt-token-2026');
-      return studentUser;
+      const found = accounts[lookupKey];
+      if (found && found.password === credentials.password) {
+        if (found.status === 'approved') {
+          directLogin(found, 'demo-student-jwt-token-2026');
+        }
+        return found;
+      }
+      if ((lookupKey === 'rohit@xyzec.edu' || lookupKey === 'reg-2026-0001' || lookupKey === 'student') && credentials.password === 'student123') {
+        const demoStudent = {
+          name: 'Rohit Kumar',
+          role: 'student',
+          loginId: 'rohit@xyzec.edu',
+          email: 'rohit@xyzec.edu',
+          registerNo: 'REG-2026-0001',
+          department: 'Computer Science & Engineering',
+          joinYear: '2026',
+          status: 'approved',
+          photoUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
+          bio: `Enrolled in Computer Science & Engineering, Batch of 2026.`
+        };
+        directLogin(demoStudent, 'demo-student-jwt-token-2026');
+        return demoStudent;
+      }
+      throw new Error('Access Denied: Account not found or credentials invalid. Please check your ID/Password or wait for Super Admin approval.');
     }
     throw new Error('Login failed: Invalid response from server');
   };

@@ -8,6 +8,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import Student from '../models/Student.js';
 import * as mockStore from '../services/mockStore.js';
+import { dbStore } from '../services/dbStore.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import logger from '../utils/logger.js';
 
@@ -28,21 +29,16 @@ router.post(
       throw new AppError('Please provide all required student fields', 400);
     }
 
-    if (!isDbConnected()) {
-      const existing = mockStore.mockStudents.find((s) => s.studentId === studentId || s.email === email);
-      if (existing) throw new AppError('Student with this ID or Email already exists', 409);
+    const newStudent = { studentId, name, email, department, year, interests: interests || [], isActive: true };
+    dbStore.saveUser(newStudent);
 
-      const newStudent = { studentId, name, email, department, year, interests: interests || [], isActive: true };
-      mockStore.mockStudents.push(newStudent);
-      return res.status(201).json({ success: true, message: 'Created in mockStore', student: newStudent });
+    if (isDbConnected()) {
+      try {
+        await Student.create(newStudent);
+      } catch (err) {}
     }
 
-    let student = await Student.findOne({ $or: [{ studentId }, { email }] });
-    if (student) throw new AppError('Student with this ID or Email already exists', 409);
-
-    student = await Student.create({ studentId, name, email, department, year, interests: interests || [] });
-    logger.info(`👤 Created new student profile: ${student.name}`);
-    res.status(201).json({ success: true, message: 'Student profile created successfully', student });
+    res.status(201).json({ success: true, message: 'Created student profile in database', student: newStudent });
   })
 );
 
@@ -52,11 +48,33 @@ router.post(
 router.get(
   '/',
   asyncHandler(async (_req, res) => {
-    if (!isDbConnected()) {
-      return res.status(200).json({ success: true, count: mockStore.mockStudents.length, students: mockStore.mockStudents });
-    }
-    const students = await Student.find({ isActive: true }).sort({ createdAt: -1 });
+    const students = dbStore.getUsers().filter(u => u.role === 'student' && u.status !== 'deleted');
     res.status(200).json({ success: true, count: students.length, students });
+  })
+);
+
+/**
+ * @route GET /api/students/marks/:studentId
+ */
+router.get(
+  '/marks/:studentId',
+  asyncHandler(async (req, res) => {
+    const { studentId } = req.params;
+    const allMarks = dbStore.getMarks();
+    res.status(200).json({ success: true, marks: allMarks[studentId] || {} });
+  })
+);
+
+/**
+ * @route POST /api/students/marks
+ */
+router.post(
+  '/marks',
+  asyncHandler(async (req, res) => {
+    const { studentId, marksData } = req.body;
+    if (!studentId || !marksData) throw new AppError('studentId and marksData required', 400);
+    const saved = dbStore.saveMarks(studentId, marksData);
+    res.status(200).json({ success: true, message: 'Marks saved to database', marks: saved });
   })
 );
 
@@ -67,13 +85,7 @@ router.get(
   '/:studentId',
   asyncHandler(async (req, res) => {
     const { studentId } = req.params;
-    if (!isDbConnected()) {
-      const student = mockStore.mockStudents.find((s) => s.studentId === studentId);
-      if (!student) throw new AppError(`Student not found with ID: ${studentId}`, 404);
-      return res.status(200).json({ success: true, student });
-    }
-
-    const student = await Student.findOne({ studentId });
+    const student = dbStore.getUserByIdentifier(studentId);
     if (!student) throw new AppError(`Student not found with ID: ${studentId}`, 404);
     res.status(200).json({ success: true, student });
   })

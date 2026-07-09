@@ -67,6 +67,17 @@ export default function Login() {
         role: roleParam,
       });
 
+      if (user.status === 'deleted') {
+        setError('❌ Access Denied: This account ID has been deleted by the Super Admin.');
+        setLoading(false);
+        return;
+      }
+      if (user.status === 'pending_approval') {
+        setError('⏳ Account Approval Pending: Your account is waiting for Super Admin approval. Once approved in the Super Admin Dashboard, you can log in.');
+        setLoading(false);
+        return;
+      }
+
       // Route based on role
       if (user.role === 'super_admin' || user.role === 'admin') {
         navigate('/super-admin', { replace: true });
@@ -80,6 +91,11 @@ export default function Login() {
         navigate('/dashboard', { replace: true });
       }
     } catch (err) {
+      if (err.message && (err.message.includes('Access Denied') || err.message.includes('Approval Pending') || err.message.includes('Invalid password') || err.message.includes('deleted') || err.message.includes('pending'))) {
+        setError(err.message);
+        setLoading(false);
+        return;
+      }
       if (roleParam === 'super_admin' && loginId === 'stark@123' && password === '12345678') {
         localStorage.setItem('helpdesk_token', 'demo-super-admin-jwt-token-2026');
         localStorage.setItem('helpdesk_user', JSON.stringify({

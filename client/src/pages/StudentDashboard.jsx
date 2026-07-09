@@ -359,24 +359,13 @@ export default function StudentDashboard() {
           </button>
 
           <button
-            onClick={() => setActiveTab('prof_announcements')}
-            style={{ padding: '1rem', borderRadius: '12px', border: activeTab === 'prof_announcements' ? '1px solid #f472b6' : '1px solid transparent', background: activeTab === 'prof_announcements' ? 'linear-gradient(135deg, rgba(244, 114, 182, 0.2) 0%, rgba(219, 39, 119, 0.3) 100%)' : 'transparent', color: activeTab === 'prof_announcements' ? '#f472b6' : '#cbd5e1', fontWeight: 700, fontSize: '1rem', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px', transition: 'all 0.2s' }}
+            onClick={() => setActiveTab('announcements')}
+            style={{ padding: '1rem', borderRadius: '12px', border: activeTab === 'announcements' ? '1px solid #f472b6' : '1px solid transparent', background: activeTab === 'announcements' ? 'linear-gradient(135deg, rgba(244, 114, 182, 0.2) 0%, rgba(219, 39, 119, 0.3) 100%)' : 'transparent', color: activeTab === 'announcements' ? '#f472b6' : '#cbd5e1', fontWeight: 700, fontSize: '1rem', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px', transition: 'all 0.2s' }}
           >
             <span style={{ fontSize: '1.3rem' }}>📢</span>
             <div>
-              <div>Professor Notices</div>
-              <div style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 400 }}>Class Advisor Broadcasts</div>
-            </div>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('hod_announcements')}
-            style={{ padding: '1rem', borderRadius: '12px', border: activeTab === 'hod_announcements' ? '1px solid #ec4899' : '1px solid transparent', background: activeTab === 'hod_announcements' ? 'linear-gradient(135deg, rgba(236, 72, 153, 0.2) 0%, rgba(190, 24, 93, 0.3) 100%)' : 'transparent', color: activeTab === 'hod_announcements' ? '#fbcfe8' : '#cbd5e1', fontWeight: 700, fontSize: '1rem', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px', transition: 'all 0.2s' }}
-          >
-            <span style={{ fontSize: '1.3rem' }}>🏛️</span>
-            <div>
-              <div>HOD Announcements</div>
-              <div style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 400 }}>Department Official Alerts</div>
+              <div>Campus Announcements</div>
+              <div style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 400 }}>HOD & Professor Notices</div>
             </div>
           </button>
 
@@ -631,74 +620,78 @@ export default function StudentDashboard() {
             </div>
           )}
 
-          {/* TAB 4: PROFESSOR ANNOUNCEMENTS */}
-          {activeTab === 'prof_announcements' && (
-            <div>
-              <div style={{ marginBottom: '1.8rem' }}>
-                <h2 style={{ fontSize: '1.8rem', margin: 0, fontWeight: 800 }}>📢 Professor & Class Advisor Broadcast Feed</h2>
-                <p style={{ color: '#94a3b8', margin: '4px 0 0 0' }}>Messages and media attachments sent directly by your Section Class Advisor.</p>
+          {/* TAB 4: OFFICIAL CAMPUS ANNOUNCEMENTS (HOD & PROFESSOR FEEDS) */}
+          {activeTab === 'announcements' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+              <div>
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <h2 style={{ fontSize: '1.8rem', margin: 0, fontWeight: 800 }}>📢 Official Campus Announcements & Circulars</h2>
+                  <p style={{ color: '#94a3b8', margin: '4px 0 0 0' }}>Official notices broadcasted by your Head of Department (HOD) and Section Class Advisor.</p>
+                </div>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-                {(() => {
-                  const profAnn = JSON.parse(localStorage.getItem('helpdesk_prof_announcements') || '[]');
-                  if (profAnn.length === 0) {
-                    return (
-                      <div style={{ background: 'rgba(30, 41, 59, 0.6)', padding: '3rem', borderRadius: '16px', textAlign: 'center', color: '#94a3b8' }}>
-                        No announcements posted by your Professor yet.
+              {/* HOD Circulars Feed */}
+              <div>
+                <h3 style={{ color: '#fbcfe8', fontSize: '1.3rem', borderBottom: '1px solid rgba(236, 72, 153, 0.3)', paddingBottom: '8px', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span>🏛️</span> Head of Department (HOD) Circulars
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+                  {(() => {
+                    const hodAnn = JSON.parse(localStorage.getItem('helpdesk_hod_announcements') || '[]');
+                    if (hodAnn.length === 0) {
+                      return (
+                        <div style={{ background: 'rgba(30, 41, 59, 0.6)', padding: '2rem', borderRadius: '16px', textAlign: 'center', color: '#94a3b8' }}>
+                          No official circulars posted by HOD at this time.
+                        </div>
+                      );
+                    }
+                    return hodAnn.map((a, idx) => (
+                      <div key={a.id || idx} style={{ background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(236, 72, 153, 0.4)', padding: '1.5rem', borderRadius: '16px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                          <span style={{ fontWeight: 800, color: '#fbcfe8' }}>🏛️ {a.hodName || 'Head of Department'}</span>
+                          <span style={{ fontSize: '0.78rem', color: '#94a3b8' }}>{a.date}</span>
+                        </div>
+                        <h4 style={{ margin: '0 0 8px 0', fontSize: '1.15rem', color: 'white' }}>{a.title}</h4>
+                        <p style={{ margin: '0 0 12px 0', color: '#cbd5e1', lineHeight: 1.6 }}>{a.message}</p>
+                        {a.attachmentUrl && a.attachmentType === 'image' && (
+                          <img src={a.attachmentUrl} alt="Notice Attachment" style={{ maxWidth: '420px', width: '100%', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }} />
+                        )}
                       </div>
-                    );
-                  }
-                  return profAnn.map((a, idx) => (
-                    <div key={a.id || idx} style={{ background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(244, 114, 182, 0.3)', padding: '1.5rem', borderRadius: '16px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                        <span style={{ fontWeight: 800, color: '#f472b6' }}>👨‍🏫 {a.profName} (Section {a.profSection || 'A'} Advisor)</span>
-                        <span style={{ fontSize: '0.78rem', color: '#94a3b8' }}>{a.date}</span>
-                      </div>
-                      <h3 style={{ margin: '0 0 8px 0', fontSize: '1.15rem' }}>{a.title}</h3>
-                      <p style={{ margin: '0 0 12px 0', color: '#cbd5e1', lineHeight: 1.6 }}>{a.message}</p>
-                      {a.attachmentUrl && a.attachmentType === 'image' && (
-                        <img src={a.attachmentUrl} alt="Notice Attachment" style={{ maxWidth: '420px', width: '100%', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }} />
-                      )}
-                    </div>
-                  ));
-                })()}
-              </div>
-            </div>
-          )}
-
-          {/* TAB 5: HOD ANNOUNCEMENTS */}
-          {activeTab === 'hod_announcements' && (
-            <div>
-              <div style={{ marginBottom: '1.8rem' }}>
-                <h2 style={{ fontSize: '1.8rem', margin: 0, fontWeight: 800 }}>🏛️ Head of Department (HOD) Official Feed</h2>
-                <p style={{ color: '#94a3b8', margin: '4px 0 0 0' }}>Department-wide circulars, notices, and exam updates from the HOD office.</p>
+                    ));
+                  })()}
+                </div>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-                {(() => {
-                  const hodAnn = JSON.parse(localStorage.getItem('helpdesk_hod_announcements') || '[]');
-                  if (hodAnn.length === 0) {
-                    return (
-                      <div style={{ background: 'rgba(30, 41, 59, 0.6)', padding: '3rem', borderRadius: '16px', textAlign: 'center', color: '#94a3b8' }}>
-                        No official circulars posted by HOD at this time.
+              {/* Professor / Class Advisor Feed */}
+              <div>
+                <h3 style={{ color: '#f472b6', fontSize: '1.3rem', borderBottom: '1px solid rgba(244, 114, 182, 0.3)', paddingBottom: '8px', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span>👨‍🏫</span> Professor & Class Advisor Notices
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+                  {(() => {
+                    const profAnn = JSON.parse(localStorage.getItem('helpdesk_prof_announcements') || '[]');
+                    if (profAnn.length === 0) {
+                      return (
+                        <div style={{ background: 'rgba(30, 41, 59, 0.6)', padding: '2rem', borderRadius: '16px', textAlign: 'center', color: '#94a3b8' }}>
+                          No notices posted by your Professor yet.
+                        </div>
+                      );
+                    }
+                    return profAnn.map((a, idx) => (
+                      <div key={a.id || idx} style={{ background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(244, 114, 182, 0.3)', padding: '1.5rem', borderRadius: '16px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                          <span style={{ fontWeight: 800, color: '#f472b6' }}>👨‍🏫 {a.profName} (Section {a.profSection || 'A'} Advisor)</span>
+                          <span style={{ fontSize: '0.78rem', color: '#94a3b8' }}>{a.date}</span>
+                        </div>
+                        <h4 style={{ margin: '0 0 8px 0', fontSize: '1.15rem', color: 'white' }}>{a.title}</h4>
+                        <p style={{ margin: '0 0 12px 0', color: '#cbd5e1', lineHeight: 1.6 }}>{a.message}</p>
+                        {a.attachmentUrl && a.attachmentType === 'image' && (
+                          <img src={a.attachmentUrl} alt="Notice Attachment" style={{ maxWidth: '420px', width: '100%', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }} />
+                        )}
                       </div>
-                    );
-                  }
-                  return hodAnn.map((a, idx) => (
-                    <div key={a.id || idx} style={{ background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(236, 72, 153, 0.4)', padding: '1.5rem', borderRadius: '16px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                        <span style={{ fontWeight: 800, color: '#fbcfe8' }}>🏛️ {a.hodName || 'Head of Department'}</span>
-                        <span style={{ fontSize: '0.78rem', color: '#94a3b8' }}>{a.date}</span>
-                      </div>
-                      <h3 style={{ margin: '0 0 8px 0', fontSize: '1.15rem' }}>{a.title}</h3>
-                      <p style={{ margin: '0 0 12px 0', color: '#cbd5e1', lineHeight: 1.6 }}>{a.message}</p>
-                      {a.attachmentUrl && a.attachmentType === 'image' && (
-                        <img src={a.attachmentUrl} alt="Notice Attachment" style={{ maxWidth: '420px', width: '100%', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }} />
-                      )}
-                    </div>
-                  ));
-                })()}
+                    ));
+                  })()}
+                </div>
               </div>
             </div>
           )}
