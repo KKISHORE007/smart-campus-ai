@@ -28,8 +28,8 @@ export default function RoleSelect() {
       desc: 'Access academic syllabus, fee schedules, library rules, AI campus advisor, and 8-semester grading.',
       colorClass: 'role-student',
       isHighlight: true,
-      path: '/student-onboard',
-      btnText: 'Proceed to Student Portal ➔'
+      path: '/login',
+      btnText: 'Sign In to Campus Portal ➔'
     },
     {
       id: 'staff',
@@ -39,8 +39,8 @@ export default function RoleSelect() {
       desc: 'Grading dashboard, internal test marks posting, class advisor section cohorts, and attendance analytics.',
       colorClass: 'role-student',
       isHighlight: true,
-      path: '/staff-onboard',
-      btnText: 'Proceed to Professor Portal ➔'
+      path: '/login',
+      btnText: 'Sign In to Campus Portal ➔'
     },
     {
       id: 'hod',
@@ -50,8 +50,8 @@ export default function RoleSelect() {
       desc: 'Departmental curriculum oversight, faculty review, 8-semester grading analytics, and fee approvals.',
       colorClass: 'role-student',
       isHighlight: true,
-      path: '/hod-onboard',
-      btnText: 'Proceed to HOD Portal ➔'
+      path: '/login',
+      btnText: 'Sign In to Campus Portal ➔'
     },
   ];
 
@@ -60,11 +60,7 @@ export default function RoleSelect() {
       alert(`⏳ ${role.title} is scheduled for the next development phase!`);
       return;
     }
-    if (role.path) {
-      navigate(role.path);
-    } else {
-      navigate(`/login?role=${role.id}`);
-    }
+    navigate('/login');
   };
 
   return (
