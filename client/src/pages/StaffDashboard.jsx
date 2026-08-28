@@ -1200,3 +1200,5 @@ export default function StaffDashboard() {
     </div>
   );
 }
+
+// Minor logic refactor
