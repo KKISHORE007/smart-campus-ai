@@ -436,3 +436,5 @@ export default function Login() {
     </div>
   );
 }
+
+// Handled edge cases
