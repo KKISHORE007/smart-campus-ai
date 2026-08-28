@@ -78,3 +78,5 @@ conversationSchema.methods.autoTitle = function () {
 
 const Conversation = mongoose.model('Conversation', conversationSchema);
 export default Conversation;
+
+// Cleanup and formatting
