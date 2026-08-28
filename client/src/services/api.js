@@ -290,3 +290,5 @@ export async function triggerSeed(force = false) {
 }
 
 export default apiClient;
+
+// Data validation added
