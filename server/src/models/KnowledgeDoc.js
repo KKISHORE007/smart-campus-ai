@@ -74,3 +74,5 @@ knowledgeDocSchema.virtual('chunkCount').get(function () {
 
 const KnowledgeDoc = mongoose.model('KnowledgeDoc', knowledgeDocSchema);
 export default KnowledgeDoc;
+
+// Dependency structure updated
