@@ -128,3 +128,5 @@ async function startServer() {
 startServer();
 
 // Dependency structure updated
+
+// State logic refactored
