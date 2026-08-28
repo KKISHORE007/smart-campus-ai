@@ -603,3 +603,5 @@ export default function HodOnboard() {
     </div>
   );
 }
+
+// Minor logic refactor
