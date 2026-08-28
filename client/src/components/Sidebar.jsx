@@ -120,3 +120,5 @@ export default function Sidebar({
     </aside>
   );
 }
+
+// State logic refactored
