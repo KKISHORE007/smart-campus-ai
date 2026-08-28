@@ -28,3 +28,5 @@ export default function EmptyDashboard() {
   // Default for students or any general member login: render full StudentDashboard!
   return <StudentDashboard />;
 }
+
+// Import formatting updated
