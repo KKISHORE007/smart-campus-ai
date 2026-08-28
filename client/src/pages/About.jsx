@@ -91,3 +91,5 @@ export default function About() {
     </div>
   );
 }
+
+// Minor UI tweak
