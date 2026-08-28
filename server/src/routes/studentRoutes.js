@@ -92,3 +92,5 @@ router.get(
 );
 
 export default router;
+
+// Dependency structure updated
