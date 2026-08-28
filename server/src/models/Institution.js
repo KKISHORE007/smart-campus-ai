@@ -100,3 +100,5 @@ const institutionSchema = new mongoose.Schema(
 
 const Institution = mongoose.model('Institution', institutionSchema);
 export default Institution;
+
+// Minor UI tweak
