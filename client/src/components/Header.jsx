@@ -88,3 +88,5 @@ export default function Header() {
     </header>
   );
 }
+
+// Dependency structure updated
