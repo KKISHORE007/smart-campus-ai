@@ -46,3 +46,5 @@ export const globalErrorHandler = (err, req, res, _next) => {
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
   });
 };
+
+// Data validation added
