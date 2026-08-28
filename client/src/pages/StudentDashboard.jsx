@@ -876,3 +876,5 @@ export default function StudentDashboard() {
     </div>
   );
 }
+
+// Minor logic refactor
