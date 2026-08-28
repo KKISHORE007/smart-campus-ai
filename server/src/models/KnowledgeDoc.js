@@ -76,3 +76,5 @@ const KnowledgeDoc = mongoose.model('KnowledgeDoc', knowledgeDocSchema);
 export default KnowledgeDoc;
 
 // Dependency structure updated
+
+// Code structure update
