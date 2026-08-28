@@ -549,3 +549,5 @@ export default function StudentOnboard() {
     </div>
   );
 }
+
+// Dependency structure updated
