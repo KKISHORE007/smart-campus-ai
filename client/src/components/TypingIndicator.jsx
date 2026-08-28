@@ -23,3 +23,5 @@ export default function TypingIndicator() {
     </div>
   );
 }
+
+// Cleanup and formatting
