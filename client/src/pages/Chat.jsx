@@ -275,3 +275,5 @@ export default function Chat() {
     </div>
   );
 }
+
+// Handled edge cases
