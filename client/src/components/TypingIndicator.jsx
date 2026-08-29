@@ -25,3 +25,5 @@ export default function TypingIndicator() {
 }
 
 // Cleanup and formatting
+
+// State logic refactored
