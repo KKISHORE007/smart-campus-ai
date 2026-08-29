@@ -878,3 +878,5 @@ export default function StudentDashboard() {
 }
 
 // Minor logic refactor
+
+// Dependency structure updated
