@@ -1202,3 +1202,5 @@ export default function StaffDashboard() {
 }
 
 // Minor logic refactor
+
+// Code structure update
