@@ -700,3 +700,5 @@ export default function StaffOnboard() {
     </div>
   );
 }
+
+// Cleanup and formatting
