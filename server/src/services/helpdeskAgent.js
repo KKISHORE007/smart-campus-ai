@@ -361,3 +361,5 @@ export async function processMessage(studentId, message, sessionId, _chatHistory
     return generateUniversalCampusResponse(message, ragDocs, 'XYZ Engineering College', role, userName);
   }
 }
+
+// UI formatting update
